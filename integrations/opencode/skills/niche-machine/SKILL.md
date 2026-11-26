@@ -1,6 +1,6 @@
 ---
 name: niche-machine
-description: Analyze gameplay, find and cut shareable clips, route video/audio/transcript and task work to selected agents, research reference videos, list available commands with /commands, run a clip council, and rank clips. Use for Niche Machine video clipping in OpenCode.
+description: Analyze gameplay, find and cut shareable clips, route video/audio/transcript and task work to selected agents, research reference videos, list available commands with --commands, run a clip council, and rank clips. Use for Niche Machine video clipping in OpenCode.
 ---
 
 # Niche Machine video workflow
@@ -18,7 +18,7 @@ When the user sends `--commands` (alone or as a help request within `/niche-mach
 - `--transcriptreadagent:<selector>` — choose the transcript-reading agent.
 - `--taskagent:<selector>` — set the default agent for otherwise-unassigned task-agent work.
 - `--taskagent,<taskagent>,...:<selector>` — assign one selector to multiple task jobs; each job gets a separate call/result when independent.
-- `--commands` — show this list only.
+- `--commands` - show this list only.
 
 Routing flags may be combined with `/niche-machine` and research syntax; each override affects only its named role/task. Selectors must resolve uniquely to an available agent/model. Quote prompts and selectors containing spaces. Full research and capability/error behavior are defined in the sections below.
 
