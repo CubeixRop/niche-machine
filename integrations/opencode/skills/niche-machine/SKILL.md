@@ -20,15 +20,16 @@ When the user sends `--commands` (alone or as a help request within `/niche-mach
 - `--taskagent,<taskagent>,...:<selector>` — assign one selector to multiple task jobs; each job gets a separate call/result when independent.
 - `(local) (<topic-or-mode>) --self-learning loop: goal="<workflow part/task to improve>" criterion: --research (3 reference urls:<url1>,<url2>,<url3>) minimum views:<view-count> [ask/prompt:"<optional research question>"]` - improve only the named topic/mode.
 - `(global) (all-modes) --self-learning loop: goal="<workflow part/task to improve>" criterion: --research (3 reference urls:<url1>,<url2>,<url3>) minimum views:<view-count> [ask/prompt:"<optional research question>"]` - improve the workflow across all Niche Machine modes. Alias: `--self-learning-loop` (scope is still required).
-- `--ui` - open the interactive visual command builder (full-access chat with interactive HTML only); otherwise explain that it requires full-access chat and show `--commands`.
-- `--ui` - open the interactive visual command builder; requires a full-access chat that can render interactive HTML.
+- `--ui` - show the visual workflow guide; accept preferences in ordinary chat language, build the task instructions internally, and run them here without asking the user to copy/paste a generated command.
 - `--commands` - show this list only.
 
 Routing flags may be combined with `/niche-machine` and research syntax; each override affects only its named role/task. Selectors must resolve uniquely to an available agent/model. Quote prompts and selectors containing spaces. Full research, self-learning, and capability/error behavior are defined in the sections below.
 
-## Visual command builder (`--ui`)
+## Visual workflow guide (`--ui`)
 
-When the user sends `--ui`, show the interactive command builder at `ui/command-builder.html` only when this is a full-access chat that can render interactive HTML. Use the builder rather than printing a long syntax reference. It provides distinct clip-scan, reference-research, and local/global self-learning views; all seven modes; review/evidence and duration settings; optional agent routing; validation; and a live request preview with copy controls. It builds text for the user to send and does not itself run a scan, upload local media, or bypass public-video access restrictions. If a local file is selected in the builder, the generated request must remind the user to attach that file in chat. If interactive HTML or full-access chat is unavailable, do not pretend to open the UI: briefly explain the limitation and display the `--commands` list as the text fallback. Keep the UI aligned with this skill's command semantics, including self-learning scope and visual-only evidence limits.
+When the user sends `--ui`, show `ui/command-builder.html` as the interactive workflow form when this full-access chat supports HTML rendering; otherwise give a concise plain-language guide in chat. The UI provides controls for video analysis, reference research, self-learning scope, evidence, duration, and agent routing. Its action buttons submit the selected controls into the current conversation through the host's `ui/message` bridge. The form validates basic required fields locally, but the assistant must validate the submitted selections against this skill before starting work.
+
+**Execution stays in this chat.** Treat a submitted `Niche Machine UI request` as the user's task and preferences. Validate source accessibility, inputs, scope, evidence limits, routing, and modality before acting. Ask in ordinary language only for genuinely missing details; preserve all submitted settings and answers. Do not ask the user to assemble, copy, or paste command syntax. If `--ui` arrives alone and no form submission or task details are available, ask one concise, bundled, plain-language question for the intended workflow and only its missing required details. Use established defaults for optional settings. Do not start a scan or research task until its required inputs are supplied. A selected local filename in the UI is not a file upload: if the media itself is not attached or available at the supplied path, ask the user to attach it or provide an accessible path. Never claim that a picker selection exposed the video content. Keep all scope, evidence, access, modality, and capability constraints in this skill; a visual choice never overrides them.
 
 ## Keep this OpenCode integration distinct and published
 
@@ -106,7 +107,7 @@ Follow the Self-Training Loop skill's test rig, blind evaluation, scoring, docto
 --research (3 reference urls:<url1>,<url2>,<url3>) minimum views:<view-count> ask/prompt:"<what to investigate>"
 ```
 
-Require exactly three distinct `http(s)` reference URLs, a non-negative integer `minimum views` value, and a non-empty `ask/prompt`. Interpret the value as a per-video minimum public view count. If any value is missing or malformed, or there are not exactly three URLs, stop and ask for the corrected arguments; do not start fetching or analyzing. Example:
+Require exactly three distinct `http(s)` reference URLs and a non-negative integer `minimum views` value. For command-syntax requests, require a non-empty `ask/prompt`; if missing or malformed, or there are not exactly three URLs, stop and ask for the corrected arguments without fetching or analyzing. For a validated UI research submission with no research question, draft a concise task-relevant question from the user's selected workflow and preferences; asking for this optional question is not required. Example:
 
 ```text
 --research (3 reference urls:https://video.example/a,https://video.example/b,https://video.example/c) minimum views:1000000 ask/prompt:"Analyze these videos and explain what seems to make them popular for Niche Machine."
