@@ -1,6 +1,6 @@
 ---
 name: niche-machine
-description: Analyze gameplay, find and cut shareable clips, route video/audio/transcript and task work to selected agents, research reference videos, self-train this OpenCode skill, list available commands with --commands, run a clip council, and rank clips. Use for Niche Machine video clipping in OpenCode.
+description: Analyze gameplay, find and cut shareable clips, route video/audio/transcript and task work to selected agents, research reference videos, self-train this OpenCode skill, open a visual command builder with --ui, list available commands with --commands, run a clip council, and rank clips. Use for Niche Machine video clipping in OpenCode.
 ---
 
 # Niche Machine video workflow
@@ -20,9 +20,15 @@ When the user sends `--commands` (alone or as a help request within `/niche-mach
 - `--taskagent,<taskagent>,...:<selector>` — assign one selector to multiple task jobs; each job gets a separate call/result when independent.
 - `(local) (<topic-or-mode>) --self-learning loop: goal="<workflow part/task to improve>" criterion: --research (3 reference urls:<url1>,<url2>,<url3>) minimum views:<view-count> [ask/prompt:"<optional research question>"]` - improve only the named topic/mode.
 - `(global) (all-modes) --self-learning loop: goal="<workflow part/task to improve>" criterion: --research (3 reference urls:<url1>,<url2>,<url3>) minimum views:<view-count> [ask/prompt:"<optional research question>"]` - improve the workflow across all Niche Machine modes. Alias: `--self-learning-loop` (scope is still required).
+- `--ui` - open the interactive visual command builder (full-access chat with interactive HTML only); otherwise explain that it requires full-access chat and show `--commands`.
+- `--ui` - open the interactive visual command builder; requires a full-access chat that can render interactive HTML.
 - `--commands` - show this list only.
 
 Routing flags may be combined with `/niche-machine` and research syntax; each override affects only its named role/task. Selectors must resolve uniquely to an available agent/model. Quote prompts and selectors containing spaces. Full research, self-learning, and capability/error behavior are defined in the sections below.
+
+## Visual command builder (`--ui`)
+
+When the user sends `--ui`, show the interactive command builder at `ui/command-builder.html` only when this is a full-access chat that can render interactive HTML. Use the builder rather than printing a long syntax reference. It provides distinct clip-scan, reference-research, and local/global self-learning views; all seven modes; review/evidence and duration settings; optional agent routing; validation; and a live request preview with copy controls. It builds text for the user to send and does not itself run a scan, upload local media, or bypass public-video access restrictions. If a local file is selected in the builder, the generated request must remind the user to attach that file in chat. If interactive HTML or full-access chat is unavailable, do not pretend to open the UI: briefly explain the limitation and display the `--commands` list as the text fallback. Keep the UI aligned with this skill's command semantics, including self-learning scope and visual-only evidence limits.
 
 ## Keep this OpenCode integration distinct and published
 

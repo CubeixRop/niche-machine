@@ -4,7 +4,7 @@ This folder contains the OpenCode **video-review / clip-council** skill. It is i
 
 ## Install
 
-Copy `skills/niche-machine/` into OpenCode's skills directory as `niche-machine/`. The skill's companion GTA 6 rules are under `skills/niche-machine/references/`.
+Copy `skills/niche-machine/` into OpenCode's skills directory as `niche-machine/`. The skill includes its companion GTA 6 rules under `references/` and the interactive command builder under `ui/command-builder.html`. In a full-access chat that can render interactive HTML, invoke the skill with `--ui` to open the visual builder; otherwise use `--commands` for the text list.
 
 ## Publish updates from the active OpenCode installation
 
