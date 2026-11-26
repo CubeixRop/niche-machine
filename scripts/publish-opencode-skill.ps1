@@ -11,11 +11,13 @@ $source = (Resolve-Path -LiteralPath $ActiveSkillPath).Path
 $skillFile = Join-Path $source 'SKILL.md'
 $referenceFile = Join-Path $source 'references/gta6-clip-grammar.md'
 $uiFile = Join-Path $source 'ui/command-builder.html'
+$previewScript = Join-Path $source 'scripts/remote_preview.py'
 $target = Join-Path $repo 'integrations/opencode/skills/niche-machine'
 $targetRef = Join-Path $target 'references/gta6-clip-grammar.md'
 $targetUi = Join-Path $target 'ui/command-builder.html'
+$targetScripts = Join-Path $target 'scripts'
 
-foreach ($required in @($skillFile, $referenceFile, $uiFile)) {
+foreach ($required in @($skillFile, $referenceFile, $uiFile, $previewScript)) {
     if (-not (Test-Path -LiteralPath $required -PathType Leaf)) {
         throw "Required active skill file is missing: $required"
     }
@@ -45,11 +47,13 @@ if ($unsafe.Count -gt 0) {
 
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $targetRef) | Out-Null
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $targetUi) | Out-Null
+New-Item -ItemType Directory -Force -Path $targetScripts | Out-Null
 Copy-Item -LiteralPath $skillFile -Destination (Join-Path $target 'SKILL.md') -Force
 Copy-Item -LiteralPath $referenceFile -Destination $targetRef -Force
 Copy-Item -LiteralPath $uiFile -Destination $targetUi -Force
+Copy-Item -LiteralPath $previewScript -Destination (Join-Path $targetScripts 'remote_preview.py') -Force
 
-& git -C $repo add -- integrations/opencode/README.md integrations/opencode/skills/niche-machine/SKILL.md integrations/opencode/skills/niche-machine/references/gta6-clip-grammar.md integrations/opencode/skills/niche-machine/ui/command-builder.html scripts/publish-opencode-skill.ps1
+& git -C $repo add -- integrations/opencode/README.md integrations/opencode/skills/niche-machine/SKILL.md integrations/opencode/skills/niche-machine/references/gta6-clip-grammar.md integrations/opencode/skills/niche-machine/ui/command-builder.html integrations/opencode/skills/niche-machine/scripts/remote_preview.py scripts/publish-opencode-skill.ps1
 if ($LASTEXITCODE -ne 0) { throw 'Could not stage scoped OpenCode integration files.' }
 $staged = @(& git -C $repo diff --cached --name-only)
 if ($LASTEXITCODE -ne 0) { throw 'Could not inspect staged changes.' }
@@ -58,6 +62,7 @@ $allowed = @(
     'integrations/opencode/skills/niche-machine/SKILL.md',
     'integrations/opencode/skills/niche-machine/references/gta6-clip-grammar.md',
     'integrations/opencode/skills/niche-machine/ui/command-builder.html',
+    'integrations/opencode/skills/niche-machine/scripts/remote_preview.py',
     'scripts/publish-opencode-skill.ps1'
 )
 $outside = @($staged | Where-Object { $_ -notin $allowed })
