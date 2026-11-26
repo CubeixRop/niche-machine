@@ -18,7 +18,7 @@ When the user sends `--commands` (alone or as a help request within `/niche-mach
 - `--transcriptreadagent:<selector>` — choose the transcript-reading agent.
 - `--taskagent:<selector>` — set the default agent for otherwise-unassigned task-agent work.
 - `--taskagent,<taskagent>,...:<selector>` — assign one selector to multiple task jobs; each job gets a separate call/result when independent.
-- `--self-learning-loop` (alias: `--self-learning loop`) - run the Self-Training Loop on the current OpenCode Niche Machine skill from its GitHub integration path.
+- `--self-learning loop: goal="<workflow part to improve>" --research (3 reference urls:<url1>,<url2>,<url3>) minimum views:<view-count> ask/prompt:"<what to learn from the references>"` - run a research-backed Self-Training Loop on the named part of this OpenCode skill. Alias: `--self-learning-loop`.
 - `--commands` - show this list only.
 
 Routing flags may be combined with `/niche-machine` and research syntax; each override affects only its named role/task. Selectors must resolve uniquely to an available agent/model. Quote prompts and selectors containing spaces. Full research, self-learning, and capability/error behavior are defined in the sections below.
@@ -57,9 +57,20 @@ Run the review --taskagent,--taskentagent:Gpt-6 Luna
 Run the review --taskagent,council,ranking:Gpt-6 Luna
 ```
 
-## Self-learning loop (`--self-learning-loop`)
+## Research-backed self-learning loop (`--self-learning loop`)
 
-When the user invokes `--self-learning-loop` or its alias `--self-learning loop`, run the available Self-Training Loop skill on this OpenCode video-review workflow. First load the latest target prompt from this exact repository path:
+When the user invokes the self-learning command, require a non-empty `goal` naming one specific workflow part to improve, plus the full `--research` argument set: exactly three distinct public video URLs, a non-negative integer `minimum views`, and a non-empty `ask/prompt`. Accept either spelling:
+
+```text
+--self-learning loop: goal="<workflow part to improve>" --research (3 reference urls:<url1>,<url2>,<url3>) minimum views:<view-count> ask/prompt:"<what to learn from the references>"
+--self-learning-loop goal="<workflow part to improve>" --research (3 reference urls:<url1>,<url2>,<url3>) minimum views:<view-count> ask/prompt:"<what to learn from the references>"
+```
+
+The `goal` is the skill behavior under improvement (for example, finding strong clips through visual watching alone). The research prompt is a separate question about what to inspect in the three references. Verify the visible view count for each reference meets the specified threshold; if any URL is inaccessible, below threshold, or unverifiable, stop and request a qualifying replacement rather than training on fewer examples or swapping URLs silently. Inspect references only through accessible public metadata/media and the routed modalities; do not bypass access controls.
+
+Use the three references and the goal together to derive explicit, observable scoring criteria for the loop. `ask/prompt` directs the reference analysis; it is not itself the improvement goal or the final rubric. Translate the goal into a narrowly scoped evaluation task, and translate repeated, evidence-backed patterns in the qualifying references into a blind judge rubric and realistic test cases for that task. Score only criteria relevant to the stated goal, report how each criterion was grounded in reference observations, and label any inference. Do not use view count as a creative-quality score; it is only an eligibility threshold. For a goal such as visual-only clip finding, constrain test inputs and judge instructions to video/visual evidence alone: no transcript, audio, comments, or other unavailable cues may be used to establish a visual event. Check that the selected writer/judge routes can actually receive the required inputs before testing; state a capability error rather than pretending video was watched.
+
+Then run the Self-Training Loop procedure on this OpenCode video-review workflow. Treat the supplied `goal` as the thing to improve and the reference-derived criteria as the scoring goal. Reuse information already present in the command; ask only for hard rules, excluded scoring factors, test cases, or round/sample budget that remain genuinely unspecified. Test only the named workflow part, hold unrelated skill behavior constant, and never weaken truth, safety, or modality constraints. First load the latest target prompt from this exact repository path:
 
 ```text
 Repository: https://github.com/CubeixRop/niche-machine.git
