@@ -1,6 +1,6 @@
 ---
 name: niche-machine
-description: Analyze gameplay, find and cut shareable clips, route video/audio/transcript and task work to selected agents, research reference videos, self-train this OpenCode skill, open a visual command builder with --ui, list available commands with --commands, run a clip council, and rank clips. Use for Niche Machine video clipping in OpenCode.
+description: Analyze gameplay, find and cut shareable clips, use the GTA 6 game-specific workflow, route video/audio/transcript and task work to selected agents, research reference videos, self-train this OpenCode skill, open a visual command builder with --ui, list available commands with --commands, run a clip council, and rank clips. Use for Niche Machine video clipping in OpenCode.
 ---
 
 # Niche Machine video workflow
@@ -11,7 +11,8 @@ Turn a local gameplay recording into timestamped, reviewable video clips. Keep t
 
 When the user sends `--commands` (alone or as a help request within `/niche-machine`), print this concise command list and stop; do not start video, research, or file work:
 
-- `/niche-machine <video-or-task>` — run the clip workflow on the user's recording/request.
+- `/niche-machine <video-or-task>` — run the clip workflow on the user's recording/request; use `--mode:gta6` or `Workflow mode: GTA 6` for the GTA 6-specific workflow.
+- `--mode:gta6` — apply the GTA 6 game-specific clip grammar, defaults, cuts, and ranking guidance.
 - `--research (3 reference urls:<url1>,<url2>,<url3>) minimum views:<view-count> ask/prompt:"<question>"` — compare exactly three qualifying reference videos and apply evidence-backed findings to Niche Machine.
 - `--videoagent:<selector>` — choose the video-inspection agent.
 - `--listeneragent:<selector>` — choose the audio-listening agent.
@@ -23,7 +24,7 @@ When the user sends `--commands` (alone or as a help request within `/niche-mach
 - `--ui` - show the visual workflow guide; accept preferences in ordinary chat language, build the task instructions internally, and run them here without asking the user to copy/paste a generated command.
 - `--commands` - show this list only.
 
-Routing flags may be combined with `/niche-machine` and research syntax; each override affects only its named role/task. Selectors must resolve uniquely to an available agent/model. Quote prompts and selectors containing spaces. Full research, self-learning, and capability/error behavior are defined in the sections below.
+Routing flags may be combined with `/niche-machine` and research syntax; each override affects only its named role/task. Selectors must resolve uniquely to an available agent/model. Quote prompts and selectors containing spaces. `--mode:gta6` is a game-specific workflow mode, independent of candidate review strictness. Also accept the plain-language equivalent `Workflow mode: GTA 6`; infer GTA 6 mode when the source is clearly GTA 6. Full research, self-learning, and capability/error behavior are defined in the sections below.
 
 ## Visual workflow guide (`--ui`)
 
@@ -60,6 +61,7 @@ Before dispatch, confirm the selector resolves to an available agent/model and t
 Examples:
 
 ```text
+Clip GTA 6 gameplay --mode:gta6
 Find clips in recording.mp4 --videoagent:5.3flash --listeneragent:mimo-v2flash --transcriptreadagent:Gpt-6 Luna
 Run the review --taskagent,--taskentagent:Gpt-6 Luna
 Run the review --taskagent,council,ranking:Gpt-6 Luna
@@ -132,7 +134,7 @@ The four roles in each stage are separate agent sessions/personas, but all eight
 
 ## Game-specific references
 
-`references/gta6-clip-grammar.md` holds the calibrated rules for GTA 6 sources: ten candidate lead types, start/end cut rules, duration bands, title shapes and ranking priorities, derived from 20 viral GTA 6 clips. It sits next to this file; on this machine: `C:\Users\cubei\.config\opencode\skills\niche-machine\references\gta6-clip-grammar.md`. Read it when the source is GTA 6 or the user asks for GTA 6 clipping, and pass the relevant sections to the transcript analyst, the council and the rankers. It refines the generic defaults below; it does not replace the chosen duration range or review mode.
+`references/gta6-clip-grammar.md` holds the calibrated rules for GTA 6 sources: ten candidate lead types, start/end cut rules, duration bands, title shapes and ranking priorities, derived from 20 viral GTA 6 clips. It sits next to this file; on this machine: `C:\Users\cubei\.config\opencode\skills\niche-machine\references\gta6-clip-grammar.md`. Read it whenever the user selects **GTA 6 mode** (including the UI's `Workflow focus: gta6`) or the source is clearly GTA 6. In this mode, apply the grammar's candidate leads, inciting-moment/reaction-end cuts, facecam preservation, title guidance, and ranking priorities; pass the relevant sections to the transcript analyst, council, and rankers. Use a preferred duration of 50 seconds and maximum of 60 seconds when the user's settings are still the generic defaults (10/30/60); allow strong shorter reactions rather than padding them. Do not overwrite explicitly requested clip durations or review mode. For a user's explicit duration settings, respect them and report when they conflict with the GTA 6 evidence-based duration guidance. GTA 6 is a game-specific workflow mode, not an additional candidate review mode; the existing `structure_only`, `structure_lenient`, `lenient`, and `no_structure` choices still control how strictly clip structure is judged.
 
 ## Evidence priority
 
@@ -142,7 +144,7 @@ For every source, direct evidence from watching and hearing the recording is pri
 
 0. **Optional reference research.** If `--research` is present, validate its three reference URLs and prompt using `Reference-video research mode`. Complete this before choosing niches or reviewing the user's own gameplay; carry forward only evidence-backed, caveated recommendations. Without this flag, skip research and do not inspect unrelated URLs.
 
-1. **Confirm source and settings.** Check the video exists, inspect duration/resolution/audio streams with `ffprobe`, and make sure there is enough output space. Use the user's requested duration range and output resolution. Defaults if they have not specified: 10-second minimum, 30-second preferred duration, 60-second maximum, vertical 1080 × 1920, and `structure_lenient` review mode. For GTA 6, propose a 40–55 s preferred duration instead of 30 s; the observed viral band is 38–55 s. Validate minimum ≤ preferred ≤ maximum. Ask for a choice among the review modes below if none is set; remember it for this run.
+1. **Confirm source and settings.** Check the video exists, inspect duration/resolution/audio streams with `ffprobe`, and make sure there is enough output space. Use the user's requested duration range and output resolution. Defaults if they have not specified: 10-second minimum, 30-second preferred duration, 60-second maximum, vertical 1080 × 1920, and `structure_lenient` review mode. When GTA 6 mode is selected and durations are still generic defaults, set preferred duration to 50 seconds with a 60-second maximum; the grammar's observed viral band is 38–55 seconds. Preserve explicit duration choices, and never pad a strong shorter reaction just to fit a target. Validate minimum ≤ preferred ≤ maximum. Ask for a choice among the review modes below if none is set; remember it for this run.
 
 2. **Start visual and direct-listening passes independently.** If `--videoagent` or `--listeneragent` is set, use that selected agent/model for its pass after checking modality capability. If only one is set, use the default MiMo route for the other role, also verifying that modality. If both are set, keep the passes separately scoped; if neither is set, use the default MiMo audiovisual route. When both tasks are available, launch them concurrently and align their timestamped findings when returned. Do not call `scripts/analyze_mimo.py` in this workflow; it uses a separate Xiaomi API key. Preserve timestamp offsets; if the source is segmented, retain each segment's source offset and keep the original untouched. Visual observations establish what is shown; direct audio observations establish reactions, delivery, and meaningful sounds that ASR may miss. Treat findings as timestamped evidence, not final clip decisions. If one selected modality cannot be passed, report that specific task failure and continue only with independent tasks; do not present transcript as a substitute for direct listening or claim the missing modality was analyzed. For GTA 6, use the grammar to interpret observations without letting transcript cues outweigh contrary footage or audio. Never ask for a separate `MIMO_API_KEY` or silently fall back to another agent.
 
