@@ -1,11 +1,26 @@
 ---
 name: niche-machine
-description: Analyze gameplay, find and cut shareable clips, route video/audio/transcript and task work to selected agents, run a clip council, and rank clips. Use for Niche Machine video clipping in OpenCode.
+description: Analyze gameplay, find and cut shareable clips, route video/audio/transcript and task work to selected agents, research reference videos, list available commands with /commands, run a clip council, and rank clips. Use for Niche Machine video clipping in OpenCode.
 ---
 
 # Niche Machine video workflow
 
 Turn a local gameplay recording into timestamped, reviewable video clips. Keep the source untouched. Work in a new folder beside the source or in the user-selected output folder. Never overwrite an existing clip or report.
+
+## Command list (`/commands`)
+
+When the user sends `/commands` (alone or as a help request within `/niche-machine`), print this concise command list and stop; do not start video, research, or file work:
+
+- `/niche-machine <video-or-task>` — run the clip workflow on the user's recording/request.
+- `--research (3 reference urls:<url1>,<url2>,<url3>) minimum views:<view-count> ask/prompt:"<question>"` — compare exactly three qualifying reference videos and apply evidence-backed findings to Niche Machine.
+- `--videoagent:<selector>` — choose the video-inspection agent.
+- `--listeneragent:<selector>` — choose the audio-listening agent.
+- `--transcriptreadagent:<selector>` — choose the transcript-reading agent.
+- `--taskagent:<selector>` — set the default agent for otherwise-unassigned task-agent work.
+- `--taskagent,<taskagent>,...:<selector>` — assign one selector to multiple task jobs; each job gets a separate call/result when independent.
+- `/commands` — show this list only.
+
+Routing flags may be combined with `/niche-machine` and research syntax; each override affects only its named role/task. Selectors must resolve uniquely to an available agent/model. Quote prompts and selectors containing spaces. Full research and capability/error behavior are defined in the sections below.
 
 ## Keep this OpenCode integration distinct and published
 
