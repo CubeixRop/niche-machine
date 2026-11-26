@@ -1,0 +1,12 @@
+#!/bin/bash
+# Niche Machine launcher: runs it with its own Python (made by nm setup).
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PY="${NICHE_HOME:-$HOME/.niche-machine}/venv/bin/python"
+if [ ! -x "$PY" ]; then
+  if [ "$1" = "setup" ] || [ "$1" = "doctor" ]; then PY="$(command -v python3.12 || command -v python3)"; else
+    echo "Niche Machine isn't set up yet. Run: $DIR/nm setup" >&2; exit 1; fi
+fi
+export PYTHONUTF8=1
+export PYTHONDONTWRITEBYTECODE=1
+exec "$PY" "$DIR/nm.py" "$@"
+
